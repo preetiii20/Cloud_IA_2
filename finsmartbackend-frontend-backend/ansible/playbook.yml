@@ -1,0 +1,64 @@
+---
+- name: Deploy Finsmart Finances on AWS EC2
+  hosts: aws
+  become: true
+
+  tasks:
+    - name: Install Java 17 and Nginx
+      ansible.builtin.apt:
+        name:
+          - openjdk-17-jdk
+          - nginx
+        state: present
+        update_cache: true
+
+    - name: Create backend deployment directory
+      ansible.builtin.file:
+        path: /opt/finsmart-finances
+        state: directory
+        mode: "0755"
+
+    - name: Copy backend JAR
+      ansible.builtin.copy:
+        src: ../target/Finsmart_Finances-0.0.1-SNAPSHOT.jar
+        dest: /opt/finsmart-finances/Finsmart_Finances-0.0.1-SNAPSHOT.jar
+        mode: "0644"
+
+    - name: Create backend systemd service
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/finsmart-backend.service
+        mode: "0644"
+        content: |
+          [Unit]
+          Description=Finsmart Finances Spring Boot Backend
+          After=network.target
+
+          [Service]
+          Type=simple
+          User=root
+          WorkingDirectory=/opt/finsmart-finances
+          ExecStart=/usr/bin/java -jar /opt/finsmart-finances/Finsmart_Finances-0.0.1-SNAPSHOT.jar
+          Restart=on-failure
+          RestartSec=5
+
+          [Install]
+          WantedBy=multi-user.target
+
+    - name: Enable and start backend service
+      ansible.builtin.systemd:
+        name: finsmart-backend
+        daemon_reload: true
+        enabled: true
+        state: restarted
+
+    - name: Deploy React frontend
+      ansible.builtin.copy:
+        src: ../../finsmartbackend-frontend-main/build/
+        dest: /var/www/html/
+        mode: "0644"
+
+    - name: Enable and start Nginx
+      ansible.builtin.systemd:
+        name: nginx
+        enabled: true
+        state: started
