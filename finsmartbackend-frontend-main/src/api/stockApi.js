@@ -1,7 +1,7 @@
 // src/api/stockApi.js
 import axiosInstance from './axiosConfig';
 
-const BASE_URL = 'http://localhost:8099/stocks';
+const BASE_URL = '/stocks';
 
 export const getAllStocks = () => axiosInstance.get(BASE_URL);
 export const createStock = (stockData) => axiosInstance.post(BASE_URL, stockData);

@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: finsmart-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: finsmart-backend
+  template:
+    metadata:
+      labels:
+        app: finsmart-backend
+    spec:
+      containers:
+        - name: backend
+          image: finsmart-backend:v1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8099
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:mysql://finsmart-mysql:3306/finsmart?allowPublicKeyRetrieval=true&useSSL=false"
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "finsmart_app"
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: "YourStrongAppPassword"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: finsmart-backend
+spec:
+  selector:
+    app: finsmart-backend
+  ports:
+    - port: 8099
+      targetPort: 8099
+  type: ClusterIP

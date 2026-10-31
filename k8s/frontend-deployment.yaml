@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: finsmart-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: finsmart-frontend
+  template:
+    metadata:
+      labels:
+        app: finsmart-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: finsmart-frontend:v1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: finsmart-frontend
+spec:
+  selector:
+    app: finsmart-frontend
+  ports:
+    - port: 80
+      targetPort: 80
+  type: NodePort
