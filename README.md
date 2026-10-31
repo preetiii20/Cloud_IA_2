@@ -1,4 +1,4 @@
-#Important File Locations in Repository
+# Important File Locations in Repository
 - Backend Dockerfile: finsmartbackend-frontend-backend/Dockerfile
 - Frontend Dockerfile: finsmartbackend-frontend-main/Dockerfile
 - Nginx Configuration: finsmartbackend-frontend-main/nginx.conf
